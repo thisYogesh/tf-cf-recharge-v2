@@ -68,8 +68,8 @@
     gap: 10px !important;
     display: flex !important;
     align-items: center !important;
-    font-size: 14px !important;
-    line-height: 21px !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
     color: #202635 !important;
   }
 
@@ -232,6 +232,26 @@
     font-weight: 400 !important;
   }
 
+  /* --- Next Order Section: Mobile scoped text overrides --- */
+  .recharge-section-next-order-actions .recharge-text-p3 {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    letter-spacing: -0.14px !important;
+  }
+
+  .recharge-section-next-order-actions .recharge-text-p1 {
+    font-size: 16px !important;
+    line-height: 21px !important;
+    letter-spacing: -0.16px !important;
+  }
+
+  /* --- Next Order Section: CTA buttons full-width on mobile --- */
+  .recharge-section-next-order-actions .recharge-button-primary,
+  .recharge-section-next-order-actions .recharge-button-secondary {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   /* --- Container / Layout --- */
   .recharge-container {
     max-width: 1117px !important;
@@ -304,6 +324,13 @@
       font-size: 18px !important;
       line-height: 25px !important;
     }
+
+    /* Desktop CTA buttons: inline row, equal width */
+    .recharge-section-next-order-actions .recharge-button-primary,
+    .recharge-section-next-order-actions .recharge-button-secondary {
+      width: auto !important;
+      flex: 1 !important;
+    }
   }
 
   /* =============================================
@@ -313,6 +340,9 @@
   /* Next order section card styling */
   .recharge-section-next-order-actions .recharge-card {
     padding: 22px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
   }
 
   /* Order summary section card styling */
