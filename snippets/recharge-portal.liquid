@@ -331,6 +331,12 @@
       width: auto !important;
       flex: 1 !important;
     }
+
+    /* Desktop order summary product image size */
+    .recharge-section-order-summary .recharge-image {
+      width: 92px !important;
+      height: 92px !important;
+    }
   }
 
   /* =============================================
@@ -348,6 +354,64 @@
   /* Order summary section card styling */
   .recharge-section-order-summary .recharge-card {
     padding: 0 18px 20px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  /* --- Order Summary: Decorative product image background --- */
+  .recharge-section-order-summary .recharge-image {
+    position: relative !important;
+    overflow: visible !important;
+    width: 80px !important;
+    height: 80px !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .recharge-section-order-summary .recharge-image::before {
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: #F2F7FB !important;
+    transform: rotate(3.1deg) !important;
+    border-radius: 0 !important;
+    z-index: 0 !important;
+  }
+
+  .recharge-section-order-summary .recharge-image::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 6px !important;
+    width: 89% !important;
+    height: 100% !important;
+    background: rgba(236, 247, 255, 0.15) !important;
+    transform: rotate(3.1deg) !important;
+    z-index: 0 !important;
+  }
+
+  .recharge-section-order-summary .recharge-image img {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* --- Order Summary: Info icon styling --- */
+  .recharge-section-order-summary .recharge-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 13px !important;
+    height: 13px !important;
+    border: 1px solid #2C70BB !important;
+    border-radius: 50% !important;
+    color: #2C70BB !important;
+    font-size: 10.4px !important;
+    line-height: 14px !important;
+    background: #FFFFFF !important;
+    flex-shrink: 0 !important;
+    vertical-align: middle !important;
   }
 
   /* X-Sell/Upsell placeholder styling */
