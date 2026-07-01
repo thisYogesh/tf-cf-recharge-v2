@@ -3,8 +3,220 @@
   Injected into the sidebar slot (*.sidebar) via content extension.
   Liquid filters do NOT process inside <script type="text/html"> blocks,
   so all asset URLs must be hardcoded CDN paths.
+
+  Structure (per Recharge Affinity best practice):
+    1. <style> block — outside the slot, applies CSS globally on the page
+    2. <script type="text/html"> — slot HTML content only (no nested <script>)
+    3. <script> — JS event listeners and initialization, as a sibling block
 {% endcomment %}
 
+{%- comment -%} Tracker widget CSS — placed OUTSIDE the slot so it loads normally {%- endcomment -%}
+<style>
+  .rc-tracker {
+    width: 354px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .rc-tracker__lockup {
+    background-image: url('https://cdn.shopify.com/s/files/1/1000/8959/4135/files/tracker-lockup-tracker-widget-4713913.png');
+    background-size: cover;
+    background-position: center;
+    padding: 20px 0;
+    text-align: center;
+    border-radius: 0;
+    position: relative;
+  }
+
+  .rc-tracker__title {
+    font-size: 22px;
+    line-height: 29px;
+    letter-spacing: -0.22px;
+    color: #FFFFFF;
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-weight: 400;
+  }
+
+  .rc-tracker__gauge {
+    position: relative;
+    width: 270px;
+    height: 190px;
+    margin: 0 auto;
+  }
+
+  .rc-tracker__arc-svg {
+    width: 270px;
+    height: 145px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .rc-tracker__counter {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 189px;
+    height: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rc-tracker__days-number {
+    font-size: 84px;
+    line-height: 119px;
+    letter-spacing: -1.68px;
+    color: #FFFFFF;
+    text-align: center;
+    font-weight: 400;
+    display: block;
+  }
+
+  .rc-tracker__days-label-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+  }
+
+  .rc-tracker__days-label {
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.56px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    text-align: center;
+    display: block;
+    max-width: 184px;
+  }
+
+  .rc-tracker__stats-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #FFFFFF;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .rc-tracker__stats-link:hover {
+    opacity: 0.8;
+  }
+
+  .rc-tracker__info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 10.4px;
+    line-height: 14px;
+    letter-spacing: -0.1px;
+    color: #FFFFFF;
+    text-align: center;
+    font-style: normal;
+  }
+
+  .rc-tracker__dates {
+    display: flex;
+    justify-content: space-between;
+    width: 340px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 7px;
+    box-sizing: border-box;
+  }
+
+  .rc-tracker__date-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rc-tracker__date-col--right {
+    text-align: right;
+  }
+
+  .rc-tracker__date-label,
+  .rc-tracker__date-value {
+    font-family: monospace;
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+  }
+
+  .rc-tracker__alert {
+    background: #D9E8F4;
+    border-radius: 4px;
+    padding: 11px 12px;
+    margin: 20px auto 0;
+    max-width: 320px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: flex-end;
+    position: relative;
+  }
+
+  .rc-tracker__alert-text {
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.1px;
+    color: #202635;
+    margin: 0;
+    flex: 1;
+  }
+
+  .rc-tracker__alert-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .rc-tracker__alert-close:hover {
+    opacity: 0.7;
+  }
+
+  .rc-tracker__actions {
+    display: flex;
+    justify-content: space-between;
+    max-width: 320px;
+    margin: 20px auto 0;
+  }
+
+  .rc-tracker__action-link {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.14px;
+    text-decoration: underline;
+    color: #FFFFFF;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .rc-tracker__action-link:hover {
+    opacity: 0.8;
+  }
+</style>
+
+{%- comment -%} Tracker widget HTML — injected into the *.sidebar slot {%- endcomment -%}
 <script type="text/html" data-recharge-slot="*.sidebar">
   <div class="rc-tracker" id="rc-tracker-widget">
     <!-- Tracker Lockup -->
@@ -80,293 +292,89 @@
       <a href="#" class="rc-tracker__action-link" id="rc-tracker-household-link">Edit Household Size</a>
     </div>
   </div>
+</script>
 
-  <style>
-    .rc-tracker {
-      width: 354px;
-      max-width: 100%;
-      margin: 0 auto;
-    }
+{%- comment -%} Tracker widget JS — OUTSIDE the slot block so it executes normally {%- endcomment -%}
+<script>
+  (function() {
+    var TOTAL_FILTER_DAYS = 30;
 
-    .rc-tracker__lockup {
-      background-image: url('https://cdn.shopify.com/s/files/1/1000/8959/4135/files/tracker-lockup-tracker-widget-4713913.png');
-      background-size: cover;
-      background-position: center;
-      padding: 20px 0;
-      text-align: center;
-      border-radius: 0;
-      position: relative;
-    }
-
-    .rc-tracker__title {
-      font-size: 22px;
-      line-height: 29px;
-      letter-spacing: -0.22px;
-      color: #FFFFFF;
-      text-align: center;
-      margin: 0 0 20px 0;
-      font-weight: 400;
-    }
-
-    .rc-tracker__gauge {
-      position: relative;
-      width: 270px;
-      height: 190px;
-      margin: 0 auto;
-    }
-
-    .rc-tracker__arc-svg {
-      width: 270px;
-      height: 145px;
-      display: block;
-      margin: 0 auto;
-    }
-
-    .rc-tracker__counter {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 189px;
-      height: 190px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .rc-tracker__days-number {
-      font-size: 84px;
-      line-height: 119px;
-      letter-spacing: -1.68px;
-      color: #FFFFFF;
-      text-align: center;
-      font-weight: 400;
-      display: block;
-    }
-
-    .rc-tracker__days-label-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding: 4px 0;
-    }
-
-    .rc-tracker__days-label {
-      font-family: monospace;
-      font-size: 14px;
-      line-height: 20px;
-      letter-spacing: 0.56px;
-      text-transform: uppercase;
-      color: #FFFFFF;
-      text-align: center;
-      display: block;
-      max-width: 184px;
-    }
-
-    .rc-tracker__stats-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      line-height: 20px;
-      color: #FFFFFF;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    .rc-tracker__stats-link:hover {
-      opacity: 0.8;
-    }
-
-    .rc-tracker__info-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      font-size: 10.4px;
-      line-height: 14px;
-      letter-spacing: -0.1px;
-      color: #FFFFFF;
-      text-align: center;
-      font-style: normal;
-    }
-
-    .rc-tracker__dates {
-      display: flex;
-      justify-content: space-between;
-      width: 340px;
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 0 7px;
-      box-sizing: border-box;
-    }
-
-    .rc-tracker__date-col {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .rc-tracker__date-col--right {
-      text-align: right;
-    }
-
-    .rc-tracker__date-label,
-    .rc-tracker__date-value {
-      font-family: monospace;
-      font-size: 10px;
-      line-height: 14px;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-      color: #FFFFFF;
-    }
-
-    .rc-tracker__alert {
-      background: #D9E8F4;
-      border-radius: 4px;
-      padding: 11px 12px;
-      margin: 20px auto 0;
-      max-width: 320px;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      justify-content: flex-end;
-      position: relative;
-    }
-
-    .rc-tracker__alert-text {
-      font-size: 10px;
-      line-height: 15px;
-      letter-spacing: 0.1px;
-      color: #202635;
-      margin: 0;
-      flex: 1;
-    }
-
-    .rc-tracker__alert-close {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .rc-tracker__alert-close:hover {
-      opacity: 0.7;
-    }
-
-    .rc-tracker__actions {
-      display: flex;
-      justify-content: space-between;
-      max-width: 320px;
-      margin: 20px auto 0;
-    }
-
-    .rc-tracker__action-link {
-      font-size: 14px;
-      line-height: 20px;
-      letter-spacing: -0.14px;
-      text-decoration: underline;
-      color: #FFFFFF;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .rc-tracker__action-link:hover {
-      opacity: 0.8;
-    }
-  </style>
-
-  <script>
-    (function() {
-      var TOTAL_FILTER_DAYS = 30;
-
-      function initTrackerWidget() {
-        var alertClose = document.getElementById('rc-tracker-alert-close');
-        if (alertClose) {
-          alertClose.addEventListener('click', function() {
-            var alert = document.getElementById('rc-tracker-alert');
-            if (alert) alert.style.display = 'none';
-          });
-        }
-
-        fetchTrackerData();
-      }
-
-      function fetchTrackerData() {
-        if (typeof window.recharge === 'undefined' || typeof window.recharge.auth === 'undefined') {
-          return;
-        }
-
-        window.recharge.auth.loginCustomerPortal().then(function(session) {
-          return window.recharge.subscription.listSubscriptions(session, {
-            limit: 10,
-            sort_by: 'id-asc',
-            status: 'Active'
-          });
-        }).then(function(result) {
-          if (!result || !result.subscriptions || result.subscriptions.length === 0) return;
-
-          var subscription = result.subscriptions[0];
-          updateTrackerUI(subscription);
-        }).catch(function(err) {
-          console.warn('[RC Tracker] Could not fetch subscription data:', err);
+    function initTrackerWidget() {
+      var alertClose = document.getElementById('rc-tracker-alert-close');
+      if (alertClose) {
+        alertClose.addEventListener('click', function() {
+          var alert = document.getElementById('rc-tracker-alert');
+          if (alert) alert.style.display = 'none';
         });
       }
 
-      function updateTrackerUI(subscription) {
-        var daysEl = document.getElementById('rc-tracker-days');
-        var deliveredEl = document.getElementById('rc-tracker-delivered-date');
-        var replaceEl = document.getElementById('rc-tracker-replace-date');
-        var alertTextEl = document.getElementById('rc-tracker-alert-text');
-        var progressArc = document.getElementById('rc-tracker-progress-arc');
+      fetchTrackerData();
+    }
 
-        if (!subscription || !subscription.next_charge_scheduled_at) return;
-
-        var nextCharge = new Date(subscription.next_charge_scheduled_at);
-        var deliveredDate = new Date(nextCharge);
-        deliveredDate.setDate(deliveredDate.getDate() - TOTAL_FILTER_DAYS);
-
-        var now = new Date();
-        var daysLeft = Math.max(0, Math.ceil((nextCharge - now) / (1000 * 60 * 60 * 24)));
-
-        if (daysEl) daysEl.textContent = daysLeft;
-
-        var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
-        if (deliveredEl) deliveredEl.textContent = months[deliveredDate.getMonth()] + ' ' + deliveredDate.getDate();
-        if (replaceEl) replaceEl.textContent = months[nextCharge.getMonth()] + ' ' + nextCharge.getDate();
-
-        if (alertTextEl) {
-          var deliveredStr = (deliveredDate.getMonth() + 1) + '/' + deliveredDate.getDate();
-          alertTextEl.textContent = 'According to our records, your filter was delivered on ' + deliveredStr + '. If you did not replace on that date, you can reset your filter health below.';
-        }
-
-        if (progressArc) {
-          var totalLength = 373;
-          var progress = Math.min(1, daysLeft / TOTAL_FILTER_DAYS);
-          var offset = totalLength * (1 - progress);
-          progressArc.setAttribute('stroke-dashoffset', offset);
-        }
+    function fetchTrackerData() {
+      if (typeof window.recharge === 'undefined' || typeof window.recharge.auth === 'undefined') {
+        return;
       }
 
-      document.addEventListener('Recharge::slot::mounted', function(e) {
-        if (e.detail && e.detail.name === 'sidebar') {
-          initTrackerWidget();
-        }
-      });
+      window.recharge.auth.loginCustomerPortal().then(function(session) {
+        return window.recharge.subscription.listSubscriptions(session, {
+          limit: 10,
+          sort_by: 'id-asc',
+          status: 'Active'
+        });
+      }).then(function(result) {
+        if (!result || !result.subscriptions || result.subscriptions.length === 0) return;
 
-      document.addEventListener('Recharge::action::orderChanged', function() {
-        fetchTrackerData();
+        var subscription = result.subscriptions[0];
+        updateTrackerUI(subscription);
+      }).catch(function(err) {
+        console.warn('[RC Tracker] Could not fetch subscription data:', err);
       });
-    })();
-  </script>
+    }
+
+    function updateTrackerUI(subscription) {
+      var daysEl = document.getElementById('rc-tracker-days');
+      var deliveredEl = document.getElementById('rc-tracker-delivered-date');
+      var replaceEl = document.getElementById('rc-tracker-replace-date');
+      var alertTextEl = document.getElementById('rc-tracker-alert-text');
+      var progressArc = document.getElementById('rc-tracker-progress-arc');
+
+      if (!subscription || !subscription.next_charge_scheduled_at) return;
+
+      var nextCharge = new Date(subscription.next_charge_scheduled_at);
+      var deliveredDate = new Date(nextCharge);
+      deliveredDate.setDate(deliveredDate.getDate() - TOTAL_FILTER_DAYS);
+
+      var now = new Date();
+      var daysLeft = Math.max(0, Math.ceil((nextCharge - now) / (1000 * 60 * 60 * 24)));
+
+      if (daysEl) daysEl.textContent = daysLeft;
+
+      var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+      if (deliveredEl) deliveredEl.textContent = months[deliveredDate.getMonth()] + ' ' + deliveredDate.getDate();
+      if (replaceEl) replaceEl.textContent = months[nextCharge.getMonth()] + ' ' + nextCharge.getDate();
+
+      if (alertTextEl) {
+        var deliveredStr = (deliveredDate.getMonth() + 1) + '/' + deliveredDate.getDate();
+        alertTextEl.textContent = 'According to our records, your filter was delivered on ' + deliveredStr + '. If you did not replace on that date, you can reset your filter health below.';
+      }
+
+      if (progressArc) {
+        var totalLength = 373;
+        var progress = Math.min(1, daysLeft / TOTAL_FILTER_DAYS);
+        var offset = totalLength * (1 - progress);
+        progressArc.setAttribute('stroke-dashoffset', offset);
+      }
+    }
+
+    document.addEventListener('Recharge::slot::mounted', function(e) {
+      if (e.detail && e.detail.name === 'sidebar') {
+        initTrackerWidget();
+      }
+    });
+
+    document.addEventListener('Recharge::action::orderChanged', function() {
+      fetchTrackerData();
+    });
+  })();
 </script>
