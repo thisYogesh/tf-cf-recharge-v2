@@ -1,0 +1,372 @@
+{% comment %}
+  Recharge Affinity portal — Pitcher Filter Health tracker widget.
+  Injected into the sidebar slot (*.sidebar) via content extension.
+  Liquid filters do NOT process inside <script type="text/html"> blocks,
+  so all asset URLs must be hardcoded CDN paths.
+{% endcomment %}
+
+<script type="text/html" data-recharge-slot="*.sidebar">
+  <div class="rc-tracker" id="rc-tracker-widget">
+    <!-- Tracker Lockup -->
+    <div class="rc-tracker__lockup">
+      <h2 class="rc-tracker__title">Pitcher Filter Health</h2>
+
+      <div class="rc-tracker__gauge">
+        <!-- SVG Arc -->
+        <svg class="rc-tracker__arc-svg" viewBox="0 0 270 145" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background arc -->
+          <path
+            d="M16 134 A 119 119 0 0 1 254 134"
+            stroke="#F2F7FB"
+            stroke-opacity="0.2"
+            stroke-width="8"
+            stroke-linecap="round"
+            fill="none"
+          />
+          <!-- Progress arc -->
+          <path
+            id="rc-tracker-progress-arc"
+            d="M16 134 A 119 119 0 0 1 254 134"
+            stroke="#F2F7FB"
+            stroke-width="8"
+            stroke-linecap="round"
+            fill="none"
+            stroke-dasharray="373"
+            stroke-dashoffset="0"
+          />
+        </svg>
+
+        <!-- Counter overlay -->
+        <div class="rc-tracker__counter">
+          <span class="rc-tracker__days-number" id="rc-tracker-days">&mdash;</span>
+          <div class="rc-tracker__days-label-container">
+            <span class="rc-tracker__days-label">DAYS LEFT of filter protection</span>
+            <a href="#" class="rc-tracker__stats-link" id="rc-tracker-stats-link">
+              <span class="rc-tracker__info-icon">i</span>
+              <span>My Filter Stats</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date labels -->
+      <div class="rc-tracker__dates">
+        <div class="rc-tracker__date-col rc-tracker__date-col--left">
+          <span class="rc-tracker__date-label">Delivered</span>
+          <span class="rc-tracker__date-value" id="rc-tracker-delivered-date">&mdash;</span>
+        </div>
+        <div class="rc-tracker__date-col rc-tracker__date-col--right">
+          <span class="rc-tracker__date-label">Replace By</span>
+          <span class="rc-tracker__date-value" id="rc-tracker-replace-date">&mdash;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert box -->
+    <div class="rc-tracker__alert" id="rc-tracker-alert">
+      <p class="rc-tracker__alert-text" id="rc-tracker-alert-text">
+        According to our records, your filter was delivered on 3/21. If you did not replace on that date, you can reset your filter health below.
+      </p>
+      <button class="rc-tracker__alert-close" id="rc-tracker-alert-close" aria-label="Close alert">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1L9 9M9 1L1 9" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Action links -->
+    <div class="rc-tracker__actions">
+      <a href="#" class="rc-tracker__action-link" id="rc-tracker-reset-link">Reset Filter Health</a>
+      <a href="#" class="rc-tracker__action-link" id="rc-tracker-household-link">Edit Household Size</a>
+    </div>
+  </div>
+
+  <style>
+    .rc-tracker {
+      width: 354px;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .rc-tracker__lockup {
+      background-image: url('https://cdn.shopify.com/s/files/1/1000/8959/4135/files/tracker-lockup-tracker-widget-4713913.png');
+      background-size: cover;
+      background-position: center;
+      padding: 20px 0;
+      text-align: center;
+      border-radius: 0;
+      position: relative;
+    }
+
+    .rc-tracker__title {
+      font-size: 22px;
+      line-height: 29px;
+      letter-spacing: -0.22px;
+      color: #FFFFFF;
+      text-align: center;
+      margin: 0 0 20px 0;
+      font-weight: 400;
+    }
+
+    .rc-tracker__gauge {
+      position: relative;
+      width: 270px;
+      height: 190px;
+      margin: 0 auto;
+    }
+
+    .rc-tracker__arc-svg {
+      width: 270px;
+      height: 145px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .rc-tracker__counter {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 189px;
+      height: 190px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rc-tracker__days-number {
+      font-size: 84px;
+      line-height: 119px;
+      letter-spacing: -1.68px;
+      color: #FFFFFF;
+      text-align: center;
+      font-weight: 400;
+      display: block;
+    }
+
+    .rc-tracker__days-label-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+    }
+
+    .rc-tracker__days-label {
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.56px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      text-align: center;
+      display: block;
+      max-width: 184px;
+    }
+
+    .rc-tracker__stats-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 20px;
+      color: #FFFFFF;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .rc-tracker__stats-link:hover {
+      opacity: 0.8;
+    }
+
+    .rc-tracker__info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 10.4px;
+      line-height: 14px;
+      letter-spacing: -0.1px;
+      color: #FFFFFF;
+      text-align: center;
+      font-style: normal;
+    }
+
+    .rc-tracker__dates {
+      display: flex;
+      justify-content: space-between;
+      width: 340px;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 7px;
+      box-sizing: border-box;
+    }
+
+    .rc-tracker__date-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rc-tracker__date-col--right {
+      text-align: right;
+    }
+
+    .rc-tracker__date-label,
+    .rc-tracker__date-value {
+      font-family: monospace;
+      font-size: 10px;
+      line-height: 14px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+    }
+
+    .rc-tracker__alert {
+      background: #D9E8F4;
+      border-radius: 4px;
+      padding: 11px 12px;
+      margin: 20px auto 0;
+      max-width: 320px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    .rc-tracker__alert-text {
+      font-size: 10px;
+      line-height: 15px;
+      letter-spacing: 0.1px;
+      color: #202635;
+      margin: 0;
+      flex: 1;
+    }
+
+    .rc-tracker__alert-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rc-tracker__alert-close:hover {
+      opacity: 0.7;
+    }
+
+    .rc-tracker__actions {
+      display: flex;
+      justify-content: space-between;
+      max-width: 320px;
+      margin: 20px auto 0;
+    }
+
+    .rc-tracker__action-link {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.14px;
+      text-decoration: underline;
+      color: #FFFFFF;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .rc-tracker__action-link:hover {
+      opacity: 0.8;
+    }
+  </style>
+
+  <script>
+    (function() {
+      var TOTAL_FILTER_DAYS = 30;
+
+      function initTrackerWidget() {
+        var alertClose = document.getElementById('rc-tracker-alert-close');
+        if (alertClose) {
+          alertClose.addEventListener('click', function() {
+            var alert = document.getElementById('rc-tracker-alert');
+            if (alert) alert.style.display = 'none';
+          });
+        }
+
+        fetchTrackerData();
+      }
+
+      function fetchTrackerData() {
+        if (typeof window.recharge === 'undefined' || typeof window.recharge.auth === 'undefined') {
+          return;
+        }
+
+        window.recharge.auth.loginCustomerPortal().then(function(session) {
+          return window.recharge.subscription.listSubscriptions(session, {
+            limit: 10,
+            sort_by: 'id-asc',
+            status: 'Active'
+          });
+        }).then(function(result) {
+          if (!result || !result.subscriptions || result.subscriptions.length === 0) return;
+
+          var subscription = result.subscriptions[0];
+          updateTrackerUI(subscription);
+        }).catch(function(err) {
+          console.warn('[RC Tracker] Could not fetch subscription data:', err);
+        });
+      }
+
+      function updateTrackerUI(subscription) {
+        var daysEl = document.getElementById('rc-tracker-days');
+        var deliveredEl = document.getElementById('rc-tracker-delivered-date');
+        var replaceEl = document.getElementById('rc-tracker-replace-date');
+        var alertTextEl = document.getElementById('rc-tracker-alert-text');
+        var progressArc = document.getElementById('rc-tracker-progress-arc');
+
+        if (!subscription || !subscription.next_charge_scheduled_at) return;
+
+        var nextCharge = new Date(subscription.next_charge_scheduled_at);
+        var deliveredDate = new Date(nextCharge);
+        deliveredDate.setDate(deliveredDate.getDate() - TOTAL_FILTER_DAYS);
+
+        var now = new Date();
+        var daysLeft = Math.max(0, Math.ceil((nextCharge - now) / (1000 * 60 * 60 * 24)));
+
+        if (daysEl) daysEl.textContent = daysLeft;
+
+        var months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        if (deliveredEl) deliveredEl.textContent = months[deliveredDate.getMonth()] + ' ' + deliveredDate.getDate();
+        if (replaceEl) replaceEl.textContent = months[nextCharge.getMonth()] + ' ' + nextCharge.getDate();
+
+        if (alertTextEl) {
+          var deliveredStr = (deliveredDate.getMonth() + 1) + '/' + deliveredDate.getDate();
+          alertTextEl.textContent = 'According to our records, your filter was delivered on ' + deliveredStr + '. If you did not replace on that date, you can reset your filter health below.';
+        }
+
+        if (progressArc) {
+          var totalLength = 373;
+          var progress = Math.min(1, daysLeft / TOTAL_FILTER_DAYS);
+          var offset = totalLength * (1 - progress);
+          progressArc.setAttribute('stroke-dashoffset', offset);
+        }
+      }
+
+      document.addEventListener('Recharge::slot::mounted', function(e) {
+        if (e.detail && e.detail.name === 'sidebar') {
+          initTrackerWidget();
+        }
+      });
+
+      document.addEventListener('Recharge::action::orderChanged', function() {
+        fetchTrackerData();
+      });
+    })();
+  </script>
+</script>

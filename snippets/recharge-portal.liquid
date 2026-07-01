@@ -1,0 +1,365 @@
+{% comment %}
+  Recharge Affinity portal customization snippet.
+  Loaded conditionally on /tools/recurring route only.
+  Contains: CSS theming, section overrides, slot injections, and JS init.
+{% endcomment %}
+
+{%- comment -%} A) Recharge theme variable overrides + B) Custom CSS targeting .recharge- classes {%- endcomment -%}
+<style>
+  /* =============================================
+     A) Recharge Theme Variable Overrides
+     ============================================= */
+  .recharge-theme {
+    --recharge-app-background: #F2F7FB;
+    --recharge-cards-background: #FFFFFF;
+    --recharge-cards-border-color: #D9E8F4;
+    --recharge-color-brand: #2C70BB;
+    --recharge-color-brand-120: #1F5A9A;
+    --recharge-button-brand: #2C70BB;
+    --recharge-button-color: #FFFFFF;
+    --recharge-button-border-radius: 100px;
+    --recharge-corners-radius: 0px;
+    --recharge-typography-primary: #202635;
+    --recharge-typography-secondary: #797D86;
+    --recharge-app-container: 1117px;
+    --recharge-typography-heading-font-family: var(--font-heading--family), system-ui, sans-serif;
+    --recharge-typography-body-font-family: var(--font-body--family), system-ui, sans-serif;
+  }
+
+  /* =============================================
+     B) Custom CSS — .recharge- prefixed classes only
+     ============================================= */
+
+  /* --- Navigation Tabs (pill style) --- */
+  .recharge-tab {
+    border-radius: 60px !important;
+    border: 1px solid #202635 !important;
+    padding: 10px 24px 12px 24px !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    text-align: center !important;
+    font-weight: 400 !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .recharge-tab-inactive {
+    background: #FFFFFF !important;
+    color: #202635 !important;
+  }
+
+  .recharge-tab-active {
+    background: #D9E8F4 !important;
+    color: #202635 !important;
+  }
+
+  /* --- Card / Section Containers --- */
+  .recharge-card {
+    background: #FFFFFF !important;
+    border: 1px solid #D9E8F4 !important;
+    border-radius: 0 !important;
+  }
+
+  /* --- Success Alert Bar --- */
+  .recharge-alert {
+    background: #F2F7FB !important;
+    border: 1px solid #5ABE8A !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    gap: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 14px !important;
+    line-height: 21px !important;
+    color: #202635 !important;
+  }
+
+  /* --- Headings --- */
+  .recharge-heading {
+    color: #202635 !important;
+    font-weight: 400 !important;
+  }
+
+  .recharge-heading-h1 {
+    font-size: 22px !important;
+    line-height: 29px !important;
+    letter-spacing: -0.22px !important;
+  }
+
+  .recharge-heading-h2 {
+    font-size: 16px !important;
+    line-height: 21px !important;
+    letter-spacing: -0.16px !important;
+  }
+
+  .recharge-heading-h3 {
+    font-size: 16px !important;
+    line-height: 21px !important;
+    letter-spacing: -0.16px !important;
+  }
+
+  /* --- Text --- */
+  .recharge-text {
+    color: #202635 !important;
+  }
+
+  .recharge-text-p1 {
+    font-size: 14px !important;
+    line-height: 20px !important;
+  }
+
+  .recharge-text-p2 {
+    font-size: 12px !important;
+    line-height: 17px !important;
+    letter-spacing: 0.12px !important;
+  }
+
+  .recharge-text-p3 {
+    font-size: 12px !important;
+    line-height: 16px !important;
+  }
+
+  /* --- Primary Button (Send Now style) --- */
+  .recharge-button-primary {
+    background: #2C70BB !important;
+    border-radius: 100px !important;
+    padding: 13px 24px 14px 24px !important;
+    color: #FFFFFF !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    text-align: center !important;
+    font-weight: 400 !important;
+    border: none !important;
+    gap: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .recharge-button-primary:hover {
+    background: #1F5A9A !important;
+  }
+
+  /* --- Secondary Button (Reschedule / outline style) --- */
+  .recharge-button-secondary {
+    border: 1px solid #202635 !important;
+    border-radius: 57px !important;
+    background: transparent !important;
+    padding: 10px 28px 13px 28px !important;
+    color: #202635 !important;
+    font-size: 14px !important;
+    line-height: 19px !important;
+    text-align: center !important;
+    font-weight: 400 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .recharge-button-secondary:hover {
+    background: rgba(32, 38, 53, 0.05) !important;
+  }
+
+  /* --- Tertiary Button (Edit / Apply style) --- */
+  .recharge-button-tertiary {
+    border: 1px solid #202635 !important;
+    border-radius: 42px !important;
+    background: #FFFFFF !important;
+    padding: 6px 20px 8px 20px !important;
+    color: #202635 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    text-align: center !important;
+    font-weight: 400 !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .recharge-button-tertiary:hover {
+    background: rgba(32, 38, 53, 0.05) !important;
+  }
+
+  /* --- Action Links (Edit Address / Edit Payment) --- */
+  .recharge-action-link {
+    color: #2C70BB !important;
+    text-decoration: underline !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 400 !important;
+    cursor: pointer;
+  }
+
+  .recharge-action-link:hover {
+    color: #1F5A9A !important;
+  }
+
+  /* --- Badge (Quantity indicator on product image) --- */
+  .recharge-badge {
+    background: #202635 !important;
+    border-radius: 63px !important;
+    color: #FFFFFF !important;
+    font-size: 13px !important;
+    line-height: 16px !important;
+    letter-spacing: 0.52px !important;
+    text-transform: uppercase !important;
+    padding: 1px 9px !important;
+    text-align: center !important;
+  }
+
+  /* --- Product Image Container --- */
+  .recharge-image {
+    background: #F2F7FB !important;
+    border-radius: 0 !important;
+  }
+
+  /* --- Form Inputs (Promo code) --- */
+  .recharge-textfield {
+    border: 1px solid #D3D8DD !important;
+    border-radius: 6px !important;
+    background: #FFFFFF !important;
+    font-size: 14px !important;
+    line-height: 21px !important;
+    padding: 8px 12px !important;
+    color: #202635 !important;
+  }
+
+  /* --- Section Headings Override --- */
+  .recharge-section-next-order-actions .recharge-heading {
+    font-weight: 400 !important;
+  }
+
+  /* --- Container / Layout --- */
+  .recharge-container {
+    max-width: 1117px !important;
+  }
+
+  /* =============================================
+     C) Responsive — Mobile defaults, desktop overrides
+     ============================================= */
+
+  /* Mobile defaults are above (base styles) */
+
+  @media screen and (min-width: 750px) {
+    /* Desktop heading sizes */
+    .recharge-heading-h1 {
+      font-size: 36px !important;
+      line-height: 47px !important;
+      letter-spacing: -0.36px !important;
+    }
+
+    .recharge-heading-h2 {
+      font-size: 20px !important;
+      line-height: 26px !important;
+      letter-spacing: -0.2px !important;
+    }
+
+    .recharge-heading-h3 {
+      font-size: 20px !important;
+      line-height: 26px !important;
+      letter-spacing: -0.2px !important;
+    }
+
+    /* Desktop text sizes */
+    .recharge-text-p1 {
+      font-size: 18px !important;
+      line-height: 25px !important;
+    }
+
+    .recharge-text-p2 {
+      font-size: 16px !important;
+      line-height: 22px !important;
+      letter-spacing: 0 !important;
+    }
+
+    .recharge-text-p3 {
+      font-size: 14px !important;
+      line-height: 21px !important;
+    }
+
+    /* Desktop alert text */
+    .recharge-alert {
+      font-size: 14px !important;
+      line-height: 21px !important;
+    }
+
+    /* Desktop action links */
+    .recharge-action-link {
+      font-size: 16px !important;
+      line-height: 23px !important;
+    }
+
+    /* Desktop product name */
+    .recharge-section-next-order-actions .recharge-text-p1 {
+      font-size: 20px !important;
+      line-height: 26px !important;
+      letter-spacing: -0.2px !important;
+    }
+
+    /* Desktop order label (subheading) */
+    .recharge-section-next-order-actions .recharge-text-p3 {
+      font-size: 18px !important;
+      line-height: 25px !important;
+    }
+  }
+
+  /* =============================================
+     Custom layout overrides for portal structure
+     ============================================= */
+
+  /* Next order section card styling */
+  .recharge-section-next-order-actions .recharge-card {
+    padding: 22px 18px !important;
+  }
+
+  /* Order summary section card styling */
+  .recharge-section-order-summary .recharge-card {
+    padding: 0 18px 20px 18px !important;
+  }
+
+  /* X-Sell/Upsell placeholder styling */
+  .rc-upsell-placeholder {
+    background: #D3D8DD;
+    padding: 200px 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  .rc-upsell-placeholder__text {
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.16px;
+    color: #202635;
+  }
+</style>
+
+{%- comment -%} D) Render tracker widget sub-snippet {%- endcomment -%}
+{% render 'recharge-tracker-widget' %}
+
+{%- comment -%} E) Upsell placeholder slot injection {%- endcomment -%}
+<script type="text/html" data-recharge-slot="overview.footer">
+  <div class="rc-upsell-placeholder">
+    <span class="rc-upsell-placeholder__text">X-Sell/Upsell Container Placeholder</span>
+  </div>
+</script>
+
+{%- comment -%} F) JavaScript initialization {%- endcomment -%}
+<script>
+  (function() {
+    /* Initialize RechargeExtensions global */
+    window.RechargeExtensions = window.RechargeExtensions || {};
+
+    /* Listen for slot mount events for initialization */
+    document.addEventListener('Recharge::slot::mounted', function(e) {
+      if (!e.detail) return;
+
+      /* Log slot mounts for debugging */
+      if (window.console && window.console.debug) {
+        console.debug('[RC Portal] Slot mounted:', e.detail.name);
+      }
+    });
+  })();
+</script>
