@@ -1,0 +1,267 @@
+{% comment %}
+  Recharge Affinity portal — Subscriptions page Education Zone.
+  Injected into the subscriptions.footer slot via content extension.
+  Liquid filters do NOT process inside <script type="text/html"> blocks,
+  so all asset URLs must be hardcoded CDN paths.
+
+  Structure (per Recharge Affinity best practice):
+    1. <style> block — outside the slot, applies CSS globally on the page
+    2. <script type="text/html"> — slot HTML content only (no nested <script>)
+    3. No JS needed — content is static
+{% endcomment %}
+
+{%- comment -%} Education Zone CSS — placed OUTSIDE the slot so it loads normally {%- endcomment -%}
+<style>
+  /* =============================================
+     Education Zone — Subscriptions Page Footer
+     ============================================= */
+
+  /* --- Base / Mobile Layout (image + text card) --- */
+  .rc-education {
+    border-radius: 8px;
+    background: #E6F0F8;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+  }
+
+  .rc-education__image {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .rc-education__text-lockup {
+    padding: 12px 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rc-education__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+
+  .rc-education__eyebrow {
+    font-family: monospace;
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #202635;
+    margin: 0;
+  }
+
+  .rc-education__headline {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.14px;
+    color: #202635;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* Desktop icon hidden on mobile */
+  .rc-education__icon {
+    display: none;
+    flex-shrink: 0;
+  }
+
+  /* Desktop body paragraph hidden on mobile */
+  .rc-education__body {
+    display: none;
+  }
+
+  /* Mobile learn more link: border-bottom style with arrow */
+  .rc-education__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #202635;
+    text-decoration: none;
+    border-bottom: 1px solid #202635;
+    padding-bottom: 4px;
+    align-self: flex-start;
+    cursor: pointer;
+  }
+
+  .rc-education__link:hover {
+    opacity: 0.7;
+  }
+
+  .rc-education__link-arrow {
+    font-size: 11px;
+    line-height: 13px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Desktop headline hidden on mobile */
+  .rc-education__headline--desktop {
+    display: none;
+  }
+
+  /* Desktop link (underline style, hidden on mobile) */
+  .rc-education__link--desktop {
+    display: none;
+  }
+
+  /* --- Desktop Layout (text-only card) --- */
+  @media screen and (min-width: 750px) {
+    .rc-education {
+      border-radius: 16px;
+      background: #D9E8F4;
+      padding: 20px;
+      gap: 12px;
+    }
+
+    /* Hide mobile image on desktop */
+    .rc-education__image {
+      display: none;
+    }
+
+    .rc-education__text-lockup {
+      padding: 0;
+      gap: 12px;
+    }
+
+    .rc-education__header {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 0;
+    }
+
+    .rc-education__header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: flex-end;
+      padding-top: 8px;
+    }
+
+    .rc-education__eyebrow {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.56px;
+    }
+
+    .rc-education__headline {
+      font-size: 18px;
+      line-height: 25px;
+      letter-spacing: 0;
+      font-family: inherit;
+    }
+
+    /* Show desktop headline, hide mobile headline on desktop */
+    .rc-education__headline--desktop {
+      display: block;
+    }
+
+    .rc-education__headline--mobile {
+      display: none;
+    }
+
+    /* Show desktop icon */
+    .rc-education__icon {
+      display: flex;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    /* Show desktop body paragraph */
+    .rc-education__body {
+      display: block;
+      font-size: 16px;
+      line-height: 22px;
+      color: #202635;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    /* Hide mobile link on desktop */
+    .rc-education__link--mobile {
+      display: none;
+    }
+
+    /* Show desktop link (underlined text style) */
+    .rc-education__link--desktop {
+      display: inline;
+      font-size: 16px;
+      line-height: 23px;
+      color: #202635;
+      text-decoration: underline;
+      cursor: pointer;
+      border-bottom: none;
+      padding-bottom: 0;
+      align-self: flex-start;
+    }
+
+    .rc-education__link--desktop:hover {
+      opacity: 0.7;
+    }
+  }
+</style>
+
+{%- comment -%} Education Zone HTML — injected into the subscriptions.footer slot {%- endcomment -%}
+<script type="text/html" data-recharge-slot="subscriptions.footer">
+  <div class="rc-education">
+    <!-- Mobile: image banner (hidden on desktop via CSS) -->
+    <img
+      class="rc-education__image"
+      src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/media-desktop-I1150861211376605.png?v=1782377262"
+      alt="Family in kitchen with water filter"
+      loading="lazy"
+    />
+
+    <!-- Text lockup -->
+    <div class="rc-education__text-lockup">
+      <div class="rc-education__header">
+        <div class="rc-education__header-content">
+          <p class="rc-education__eyebrow">DID YOU KNOW?</p>
+          <!-- Mobile headline -->
+          <p class="rc-education__headline rc-education__headline--mobile">
+            Regular replacement ensures consistent contaminant reduction and retains beneficial minerals in every glass.
+          </p>
+          <!-- Desktop headline -->
+          <p class="rc-education__headline rc-education__headline--desktop">
+            Your Water is actively protected from 25 harmful contaminants!
+          </p>
+        </div>
+
+        <!-- Desktop: 48px blue circle icon (hidden on mobile via CSS) -->
+        <div class="rc-education__icon">
+          <svg width="48" height="48" viewBox="0 0 49 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24.5" cy="24" r="24" fill="#2C70BB"/>
+            <path d="M35.9863 29.9485H34.7801V23.9176C35.0377 24.0081 35.3184 24.0086 35.5763 23.9188C35.8342 23.8291 36.0541 23.6545 36.1998 23.4236C36.3456 23.1928 36.4088 22.9192 36.3789 22.6478C36.3491 22.3764 36.228 22.1231 36.0355 21.9294L26.1499 12.0417C25.7729 11.6648 25.2616 11.4531 24.7286 11.4531C24.1955 11.4531 23.6843 11.6648 23.3073 12.0417L13.4216 21.9274C13.2279 22.1209 13.1059 22.3744 13.0754 22.6464C13.0449 22.9185 13.1079 23.1928 13.2539 23.4243C13.3999 23.6558 13.6204 23.8307 13.879 23.9204C14.1376 24.01 14.419 24.0091 14.677 23.9176V29.9485H13.4708C13.1509 29.9485 12.8441 30.0756 12.6179 30.3018C12.3917 30.528 12.2646 30.8348 12.2646 31.1547C12.2646 31.4746 12.3917 31.7814 12.6179 32.0076C12.8441 32.2338 13.1509 32.3609 13.4708 32.3609H35.9863C36.3062 32.3609 36.613 32.2338 36.8392 32.0076C37.0654 31.7814 37.1925 31.4746 37.1925 31.1547C37.1925 30.8348 37.0654 30.528 36.8392 30.3018C36.613 30.0756 36.3062 29.9485 35.9863 29.9485ZM17.0894 21.6711L24.7286 14.0319L32.3677 21.6711V29.9485H28.3471V24.7217C28.3471 24.4018 28.22 24.095 27.9938 23.8688C27.7676 23.6426 27.4608 23.5156 27.1409 23.5156H22.3162C21.9963 23.5156 21.6895 23.6426 21.4633 23.8688C21.2371 24.095 21.11 24.4018 21.11 24.7217V29.9485H17.0894V21.6711ZM25.9348 29.9485H23.5224V25.9279H25.9348V29.9485Z" fill="white"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Desktop: body paragraph (hidden on mobile via CSS) -->
+      <p class="rc-education__body">
+        Based on your delivery location, we have identified 25 harmful contaminants in your local water supply. Tap water can contain contaminants and forever chemicals such as lead, PFAS and arsenic even when it meets local regulations.
+      </p>
+
+      <!-- Mobile: Learn more with arrow (hidden on desktop via CSS) -->
+      <a href="#" class="rc-education__link rc-education__link--mobile">
+        <span>Learn more</span>
+        <span class="rc-education__link-arrow">&rarr;</span>
+      </a>
+
+      <!-- Desktop: Learn more > underlined (hidden on mobile via CSS) -->
+      <a href="#" class="rc-education__link rc-education__link--desktop">Learn more &gt;</a>
+    </div>
+  </div>
+</script>
