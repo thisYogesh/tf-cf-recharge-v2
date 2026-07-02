@@ -1,0 +1,4 @@
+## Recent
+[chat] Recharge Affinity overview page renders each section in a wrapper class .recharge-section-{name} (e.g. .recharge-section-next-order-actions = alert+date+product name+Send Now/Reschedule CTAs; .recharge-section-order-summary = 'In your order' + product line items + Order Summary totals + Delivery Address). These are DOM-sibling sections in the main content column.
+[chat] To reorder Affinity portal sections via theme CSS, use flex order on their shared parent: *:has(> .recharge-section-A):has(> .recharge-section-B){display:flex;flex-direction:column} then set order on each child. The :has(>A):has(>B) selector safely targets ONLY the parent holding both, avoiding disruption to sidebar/footer slots (which render in separate regions).
+[chat] Tracker widget injects into *.sidebar slot (separate column); upsell placeholder into overview.footer slot. So the overview main content column contains only next-order-actions + order-summary sections.
