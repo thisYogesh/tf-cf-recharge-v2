@@ -252,19 +252,6 @@
     box-sizing: border-box !important;
   }
 
-  /* --- Next Order Section: CTA row (buttons relocated below text via JS) ---
-     Mobile: buttons stacked full-width. Desktop: side-by-side, equal width. */
-  .recharge-section-next-order-actions .rc-cta-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-
-  /* Empty section-header action slot left behind after buttons move out */
-  .recharge-section-next-order-actions .rc-actions-emptied {
-    display: none !important;
-  }
 
   /* --- Container / Layout --- */
   .recharge-container {
@@ -346,10 +333,26 @@
       flex: 1 !important;
     }
 
-    /* Desktop CTA row: side-by-side */
-    .recharge-section-next-order-actions .rc-cta-row {
+    /* Desktop next-order widget typography + CTA row */
+    .rc-next-order-flat [data-testid="next-order-header"] .recharge-heading-h2:not([data-testid="next-order-date"]) {
+      font-size: 18px !important;
+      line-height: 25px !important;
+    }
+
+    .rc-next-order-flat [data-testid="next-order-date"] {
+      font-size: 36px !important;
+      line-height: 47px !important;
+      letter-spacing: -0.36px !important;
+    }
+
+    .rc-next-order-flat [data-testid="next-order-actions"] {
       flex-direction: row !important;
       gap: 16px !important;
+    }
+
+    .rc-next-order-flat [data-testid^="line-item-image"] {
+      width: 92px !important;
+      height: 92px !important;
     }
 
     /* Desktop order summary product image size */
@@ -363,19 +366,69 @@
      Custom layout overrides for portal structure
      ============================================= */
 
-  /* --- Section order: "In your order" summary must follow the
-         Send Now / Reschedule CTAs (per Figma homepage stack) --- */
-  *:has(> .recharge-section-next-order-actions):has(> .recharge-section-order-summary) {
+  /* =============================================
+     Next-order widget ([data-widget-type="recharge_next_order"])
+     Real Affinity DOM order: header(title+buttons) -> alert -> line-items.
+     Figma order: alert -> title -> [Send Now | Reschedule] -> "In your order".
+     JS re-parents the blocks; these rules style the flattened result.
+     ============================================= */
+
+  /* Flattened container (class added by JS) — vertical stack */
+  .rc-next-order-flat {
     display: flex !important;
     flex-direction: column !important;
+    gap: 20px !important;
   }
 
-  .recharge-section-next-order-actions {
-    order: 1 !important;
+  /* Title header: drop the app's space-between now that buttons are gone */
+  .rc-next-order-flat [data-testid="next-order-header"] {
+    display: block !important;
   }
 
-  .recharge-section-order-summary {
-    order: 2 !important;
+  /* Order label (e.g. "Your next order:") — muted */
+  .rc-next-order-flat [data-testid="next-order-header"] .recharge-heading-h2:not([data-testid="next-order-date"]) {
+    color: #797D86 !important;
+    font-size: 16px !important;
+    line-height: 21px !important;
+  }
+
+  /* Order date — prominent */
+  .rc-next-order-flat [data-testid="next-order-date"] {
+    font-size: 22px !important;
+    line-height: 29px !important;
+    letter-spacing: -0.22px !important;
+  }
+
+  /* CTA row: buttons stacked full-width on mobile */
+  .rc-next-order-flat [data-testid="next-order-actions"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .rc-next-order-flat [data-testid="next-order-actions"] > div {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+  }
+
+  .rc-next-order-flat [data-testid="next-order-actions"] .recharge-button {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* "In your order" product image — constrained to design size */
+  .rc-next-order-flat [data-testid^="line-item-image"] {
+    width: 80px !important;
+    height: 80px !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .rc-next-order-flat [data-testid^="line-item-image"] img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
   }
 
   /* Next order section card styling */
@@ -604,63 +657,58 @@
     /* Set page class on initial load */
     updateRechargePageClass();
 
-    /* --- Next-order card layout (match Figma stack) ---
-       The Affinity app renders this section as: [header: title + action buttons]
-       then [alert]. The design requires: [alert] on top, then the order text,
-       then a full-width row of [Send Now][Reschedule] at the bottom.
-       We relocate the alert and the two buttons via JS, idempotently. */
+    /* --- Next-order widget layout (match Figma stack) ---
+       Affinity renders [data-testid="recharge_next_order"] as:
+         header(title + action buttons)  ->  alert  ->  line-items ("In your order")
+       Figma requires:
+         alert  ->  title  ->  [Send Now | Reschedule] full-width row  ->  "In your order"
+       We re-parent the four semantic blocks (matched by stable data-testid
+       hooks, NOT hashed classes) directly into the container in that order,
+       then hide the now-empty original wrappers. Idempotent + loop-safe. */
     var MAX_LAYOUT_ATTEMPTS = 60;
     var layoutAttempts = 0;
 
     function applyNextOrderLayout() {
-      var section = document.querySelector('.recharge-section-next-order-actions');
-      if (!section) return;
+      var container = document.querySelector('[data-testid="recharge_next_order"]');
+      if (!container) return;
 
-      var card = section.querySelector('.recharge-card') || section;
-      var primaryBtn = card.querySelector('.recharge-button-primary');
-      var secondaryBtn = card.querySelector('.recharge-button-secondary');
-      var alertEl = card.querySelector('.recharge-alert');
+      var header = container.querySelector('[data-testid="next-order-header"]');
+      var actions = container.querySelector('[data-testid="next-order-actions"]');
+      var alertEl = container.querySelector('.recharge-alert') || container.querySelector('[role="alert"]');
+      var lineItems = container.querySelector('[data-testid="next-order-line-items"]');
 
-      /* Buttons not rendered yet — wait for a later mutation */
-      if (!primaryBtn && !secondaryBtn) return;
+      /* Core pieces not rendered yet — wait for a later mutation */
+      if (!header || !actions) return;
 
-      var ctaRow = card.querySelector(':scope > .rc-cta-row');
-      var buttonsInRow = ctaRow
-        && (!primaryBtn || ctaRow.contains(primaryBtn))
-        && (!secondaryBtn || ctaRow.contains(secondaryBtn));
-      var alertOnTop = !alertEl || card.firstElementChild === alertEl;
+      var order = [alertEl, header, actions, lineItems].filter(Boolean);
+      var kids = container.children;
 
-      /* Already in desired shape — nothing to do (prevents observer loop) */
-      if (buttonsInRow && alertOnTop) return;
+      /* Desired shape check: order[] are the trailing children in sequence
+         AND every other direct child is already hidden. Prevents observer loop. */
+      var trailingOk = kids.length >= order.length;
+      if (trailingOk) {
+        for (var i = 0; i < order.length; i++) {
+          if (kids[kids.length - order.length + i] !== order[i]) { trailingOk = false; break; }
+        }
+      }
+      var extrasHidden = true;
+      for (var j = 0; j < kids.length; j++) {
+        if (order.indexOf(kids[j]) === -1 && kids[j].style.display !== 'none') { extrasHidden = false; break; }
+      }
+      if (trailingOk && extrasHidden) return;
 
       if (layoutAttempts >= MAX_LAYOUT_ATTEMPTS) return;
       layoutAttempts++;
 
-      /* 1) Alert to the very top of the card */
-      if (alertEl && card.firstElementChild !== alertEl) {
-        card.insertBefore(alertEl, card.firstElementChild);
-      }
+      container.classList.add('rc-next-order-flat');
 
-      /* 2) Collect the buttons' original parent(s) so we can hide the
-            now-empty header action slot afterward */
-      var origParents = [];
-      if (primaryBtn && primaryBtn.parentElement) origParents.push(primaryBtn.parentElement);
-      if (secondaryBtn && secondaryBtn.parentElement) origParents.push(secondaryBtn.parentElement);
+      /* Re-parent the blocks directly into the container in Figma order.
+         appendChild moves each node, so final child order matches `order`. */
+      order.forEach(function(el) { container.appendChild(el); });
 
-      /* 3) Build / reuse the CTA row appended at the end of the card */
-      if (!ctaRow) {
-        ctaRow = document.createElement('div');
-        ctaRow.className = 'rc-cta-row';
-      }
-      if (primaryBtn) ctaRow.appendChild(primaryBtn);
-      if (secondaryBtn) ctaRow.appendChild(secondaryBtn);
-      card.appendChild(ctaRow);
-
-      /* 4) Hide any header action wrapper left empty by the move */
-      origParents.forEach(function(p) {
-        if (p !== ctaRow && p.children.length === 0) {
-          p.classList.add('rc-actions-emptied');
-        }
+      /* Hide leftover wrappers emptied by the moves */
+      Array.prototype.slice.call(container.children).forEach(function(child) {
+        if (order.indexOf(child) === -1) { child.style.display = 'none'; }
       });
     }
 
