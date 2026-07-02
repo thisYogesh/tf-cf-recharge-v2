@@ -252,6 +252,20 @@
     box-sizing: border-box !important;
   }
 
+  /* --- Next Order Section: CTA row (buttons relocated below text via JS) ---
+     Mobile: buttons stacked full-width. Desktop: side-by-side, equal width. */
+  .recharge-section-next-order-actions .rc-cta-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Empty section-header action slot left behind after buttons move out */
+  .recharge-section-next-order-actions .rc-actions-emptied {
+    display: none !important;
+  }
+
   /* --- Container / Layout --- */
   .recharge-container {
     max-width: 1117px !important;
@@ -330,6 +344,12 @@
     .recharge-section-next-order-actions .recharge-button-secondary {
       width: auto !important;
       flex: 1 !important;
+    }
+
+    /* Desktop CTA row: side-by-side */
+    .recharge-section-next-order-actions .rc-cta-row {
+      flex-direction: row !important;
+      gap: 16px !important;
     }
 
     /* Desktop order summary product image size */
@@ -584,10 +604,94 @@
     /* Set page class on initial load */
     updateRechargePageClass();
 
+    /* --- Next-order card layout (match Figma stack) ---
+       The Affinity app renders this section as: [header: title + action buttons]
+       then [alert]. The design requires: [alert] on top, then the order text,
+       then a full-width row of [Send Now][Reschedule] at the bottom.
+       We relocate the alert and the two buttons via JS, idempotently. */
+    var MAX_LAYOUT_ATTEMPTS = 60;
+    var layoutAttempts = 0;
+
+    function applyNextOrderLayout() {
+      var section = document.querySelector('.recharge-section-next-order-actions');
+      if (!section) return;
+
+      var card = section.querySelector('.recharge-card') || section;
+      var primaryBtn = card.querySelector('.recharge-button-primary');
+      var secondaryBtn = card.querySelector('.recharge-button-secondary');
+      var alertEl = card.querySelector('.recharge-alert');
+
+      /* Buttons not rendered yet — wait for a later mutation */
+      if (!primaryBtn && !secondaryBtn) return;
+
+      var ctaRow = card.querySelector(':scope > .rc-cta-row');
+      var buttonsInRow = ctaRow
+        && (!primaryBtn || ctaRow.contains(primaryBtn))
+        && (!secondaryBtn || ctaRow.contains(secondaryBtn));
+      var alertOnTop = !alertEl || card.firstElementChild === alertEl;
+
+      /* Already in desired shape — nothing to do (prevents observer loop) */
+      if (buttonsInRow && alertOnTop) return;
+
+      if (layoutAttempts >= MAX_LAYOUT_ATTEMPTS) return;
+      layoutAttempts++;
+
+      /* 1) Alert to the very top of the card */
+      if (alertEl && card.firstElementChild !== alertEl) {
+        card.insertBefore(alertEl, card.firstElementChild);
+      }
+
+      /* 2) Collect the buttons' original parent(s) so we can hide the
+            now-empty header action slot afterward */
+      var origParents = [];
+      if (primaryBtn && primaryBtn.parentElement) origParents.push(primaryBtn.parentElement);
+      if (secondaryBtn && secondaryBtn.parentElement) origParents.push(secondaryBtn.parentElement);
+
+      /* 3) Build / reuse the CTA row appended at the end of the card */
+      if (!ctaRow) {
+        ctaRow = document.createElement('div');
+        ctaRow.className = 'rc-cta-row';
+      }
+      if (primaryBtn) ctaRow.appendChild(primaryBtn);
+      if (secondaryBtn) ctaRow.appendChild(secondaryBtn);
+      card.appendChild(ctaRow);
+
+      /* 4) Hide any header action wrapper left empty by the move */
+      origParents.forEach(function(p) {
+        if (p !== ctaRow && p.children.length === 0) {
+          p.classList.add('rc-actions-emptied');
+        }
+      });
+    }
+
+    /* Debounced runner so the observer can't thrash */
+    var layoutQueued = false;
+    function queueNextOrderLayout() {
+      if (layoutQueued) return;
+      layoutQueued = true;
+      window.requestAnimationFrame(function() {
+        layoutQueued = false;
+        applyNextOrderLayout();
+      });
+    }
+
+    /* Reset the attempt budget on SPA navigation (new render) */
+    function resetAndRelayout() {
+      layoutAttempts = 0;
+      queueNextOrderLayout();
+    }
+
+    var portalObserver = new MutationObserver(queueNextOrderLayout);
+    portalObserver.observe(document.body, { childList: true, subtree: true });
+    queueNextOrderLayout();
+
     /* Re-evaluate on Recharge SPA navigation */
     document.addEventListener('Recharge::location::change', function() {
       updateRechargePageClass();
+      resetAndRelayout();
     });
+
+    document.addEventListener('Recharge::action::orderChanged', resetAndRelayout);
 
     /* Listen for slot mount events for initialization */
     document.addEventListener('Recharge::slot::mounted', function(e) {
