@@ -343,6 +343,21 @@
      Custom layout overrides for portal structure
      ============================================= */
 
+  /* --- Section order: "In your order" summary must follow the
+         Send Now / Reschedule CTAs (per Figma homepage stack) --- */
+  *:has(> .recharge-section-next-order-actions):has(> .recharge-section-order-summary) {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .recharge-section-next-order-actions {
+    order: 1 !important;
+  }
+
+  .recharge-section-order-summary {
+    order: 2 !important;
+  }
+
   /* Next order section card styling */
   .recharge-section-next-order-actions .recharge-card {
     padding: 22px 18px !important;
